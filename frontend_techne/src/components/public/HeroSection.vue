@@ -16,14 +16,23 @@
     <div class="hero-main-content-area">
       <div class="hero-content-wrapper">
         <div class="hero-text-content">
-          <h1>Professional Repair Services For Your Electronics & Appliances</h1>
-          <p>Expert technicians specializing in Laptops, Printers, Washing Machines, Cellphones, CCTV, Solar Panels & Medical Equipment</p>
+          <h1>
+            Professional Repair Services For Your Electronics & Appliances
+          </h1>
+          <p>
+            Expert technicians specializing in Laptops, Printers, Washing
+            Machines, Cellphones, CCTV, Solar Panels & Medical Equipment
+          </p>
           <button class="hero-button">
             Learn More <span class="arrow">&gt;</span>
           </button>
         </div>
         <div class="hero-illustration-placeholder">
-          <img :src="characterImage" alt="Kenji 'Spark' Tanaka, Electrical Engineer" class="hero-character-image" />
+          <img
+            :src="characterImage"
+            alt="Kenji 'Spark' Tanaka, Electrical Engineer"
+            class="hero-character-image"
+          />
         </div>
       </div>
     </div>
@@ -31,7 +40,7 @@
 </template>
 
 <script setup>
-import characterImage from '@/assets/images/character.png';
+import characterImage from "@/assets/images/final.png";
 </script>
 
 <style scoped>
@@ -65,7 +74,9 @@ import characterImage from '@/assets/images/character.png';
   border-radius: 50%;
   opacity: 0;
   animation: float-up 15s linear infinite;
-  box-shadow: 0 0 20px #00ff88, 0 0 40px rgba(0, 255, 136, 0.5);
+  box-shadow:
+    0 0 20px #00ff88,
+    0 0 40px rgba(0, 255, 136, 0.5);
 }
 
 .particle:nth-child(1) {
@@ -237,38 +248,38 @@ import characterImage from '@/assets/images/character.png';
   .particles {
     opacity: 0.5;
   }
-  
+
   .hero-main-content-area {
     min-height: calc(100vh - 60px);
     padding: 2rem 0;
   }
-  
+
   .hero-content-wrapper {
     flex-direction: column;
     text-align: center;
     gap: 2rem;
     padding: 0 1.5rem;
   }
-  
+
   .hero-text-content {
     max-width: 100%;
     text-align: center;
   }
-  
+
   .hero-illustration-placeholder {
     width: 100%;
     margin-top: 0;
   }
-  
+
   .hero-character-image {
     max-height: 300px;
     width: auto;
   }
-  
+
   .hero-text-content h1 {
     font-size: 2.5em;
   }
-  
+
   .hero-text-content p {
     font-size: 1em;
   }
@@ -278,20 +289,20 @@ import characterImage from '@/assets/images/character.png';
   .hero-content-wrapper {
     padding: 0 1rem;
   }
-  
+
   .hero-text-content h1 {
     font-size: 2em;
   }
-  
+
   .hero-text-content p {
     font-size: 0.95em;
   }
-  
+
   .hero-button {
     padding: 12px 24px;
     font-size: 1em;
   }
-  
+
   .hero-character-image {
     max-height: 250px;
   }
