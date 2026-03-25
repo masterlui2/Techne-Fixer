@@ -1,12 +1,24 @@
 <!-- src/App.vue -->
 <template>
-  <PublicLayout>
+  <component :is="layout">
     <router-view />
-  </PublicLayout>
+  </component>
 </template>
 
 <script setup>
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
 import PublicLayout from '@/layouts/PublicLayout.vue';
+import AdminLayout from '@/layouts/AdminLayout.vue';
+import TechnicianLayout from '@/layouts/TechnicianLayout.vue';
+
+const route = useRoute();
+
+const layout = computed(() => {
+  if (route.path.startsWith('/admin'))      return AdminLayout;
+  if (route.path.startsWith('/technician')) return TechnicianLayout;
+  return PublicLayout;
+});
 </script>
 
 <style>
@@ -39,17 +51,14 @@ body {
   overflow-x: hidden;
 }
 
-/* Ensure router-view takes full width */
 .router-view {
   width: 100%;
 }
 
-/* Remove default button styles */
 button {
   font-family: inherit;
 }
 
-/* Remove default link styles */
 a {
   color: inherit;
 }

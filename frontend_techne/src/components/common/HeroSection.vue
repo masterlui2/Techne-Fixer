@@ -1,4 +1,4 @@
-<!-- src/components/public/HeroSection.vue -->
+<!-- src/components/common/HeroSection.vue -->
 <template>
   <section class="hero-section">
     <!-- Floating particles -->
@@ -16,6 +16,7 @@
     <div class="hero-main-content-area">
       <div class="hero-content-wrapper">
         <div class="hero-text-content">
+<<<<<<< HEAD:frontend_techne/src/components/public/HeroSection.vue
           <h1>
             Professional Repair Services For Your Electronics & Appliances
           </h1>
@@ -33,6 +34,26 @@
             alt="Kenji 'Spark' Tanaka, Electrical Engineer"
             class="hero-character-image"
           />
+=======
+          <div class="text-container">
+            <h1>{{ title }}</h1>
+            <p>{{ description }}</p>
+            
+            <!-- Optional slots for additional content -->
+            <div class="extra-content-wrapper">
+              <slot name="extra-content"></slot>
+            </div>
+            
+            <div class="button-wrapper">
+              <button v-if="buttonText" class="hero-button" @click="handleButtonClick">
+                {{ buttonText }} <span class="arrow">&gt;</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="hero-illustration-placeholder">
+          <img :src="image" :alt="imageAlt" class="hero-character-image" />
+>>>>>>> f08916306df4679e8e7dc9c237cba60e52cccef4:frontend_techne/src/components/common/HeroSection.vue
         </div>
       </div>
     </div>
@@ -40,7 +61,40 @@
 </template>
 
 <script setup>
+<<<<<<< HEAD:frontend_techne/src/components/public/HeroSection.vue
 import characterImage from "@/assets/images/final.png";
+=======
+import { defineProps, defineEmits } from 'vue';
+
+const props = defineProps({
+  title: {
+    type: String,
+    required: true
+  },
+  description: {
+    type: String,
+    required: true
+  },
+  buttonText: {
+    type: String,
+    default: ''
+  },
+  image: {
+    type: String,
+    required: true
+  },
+  imageAlt: {
+    type: String,
+    default: 'Techne-Fixer Service'
+  }
+});
+
+const emit = defineEmits(['button-click']);
+
+const handleButtonClick = () => {
+  emit('button-click');
+};
+>>>>>>> f08916306df4679e8e7dc9c237cba60e52cccef4:frontend_techne/src/components/common/HeroSection.vue
 </script>
 
 <style scoped>
@@ -52,7 +106,7 @@ import characterImage from "@/assets/images/final.png";
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  width: 100%; /* Prevent overflow */
+  width: 100%;
 }
 
 /* Floating particles */
@@ -156,10 +210,9 @@ import characterImage from "@/assets/images/final.png";
   align-items: center;
   padding: 3rem 0;
   position: relative;
-  width: 100%; /* Prevent overflow */
+  width: 100%;
 }
 
-/* Content Wrapper for Hero Section (Constrained Width) */
 .hero-content-wrapper {
   max-width: 1200px;
   margin: 0 auto;
@@ -169,7 +222,7 @@ import characterImage from "@/assets/images/final.png";
   justify-content: space-between;
   gap: 3rem;
   width: 100%;
-  box-sizing: border-box; /* Include padding in width calculation */
+  box-sizing: border-box;
 }
 
 .hero-text-content {
@@ -177,6 +230,15 @@ import characterImage from "@/assets/images/final.png";
   text-align: left;
   color: #ffffff;
   max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* NEW: Container to keep consistent positioning */
+.text-container {
+  display: flex;
+  flex-direction: column;
 }
 
 .hero-text-content h1 {
@@ -185,15 +247,30 @@ import characterImage from "@/assets/images/final.png";
   margin-bottom: 0.5em;
   font-weight: 800;
   color: #ffffff;
-  word-wrap: break-word; /* Prevent text overflow */
+  word-wrap: break-word;
+  min-height: 1.1em; /* Keep title height consistent */
 }
 
 .hero-text-content p {
   font-size: 1.3em;
   line-height: 1.5;
-  margin-bottom: 2em;
+  margin-bottom: 1.5em;
   color: rgba(255, 255, 255, 0.85);
-  word-wrap: break-word; /* Prevent text overflow */
+  word-wrap: break-word;
+  min-height: 3em; /* Reserve space for 2 lines minimum */
+}
+
+/* NEW: Reserve space for extra content */
+.extra-content-wrapper {
+  min-height: 120px; /* Reserve consistent space for badges/stats */
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1em;
+}
+
+/* NEW: Keep button at consistent position */
+.button-wrapper {
+  margin-top: auto;
 }
 
 .hero-button {
@@ -234,7 +311,7 @@ import characterImage from "@/assets/images/final.png";
   align-items: center;
   position: relative;
   overflow: hidden;
-  max-width: 100%; /* Prevent overflow */
+  max-width: 100%;
 }
 
 .hero-character-image {
@@ -264,6 +341,16 @@ import characterImage from "@/assets/images/final.png";
   .hero-text-content {
     max-width: 100%;
     text-align: center;
+    align-items: center;
+  }
+
+  .button-wrapper {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .extra-content-wrapper {
+    min-height: auto; /* Remove fixed height on mobile */
   }
 
   .hero-illustration-placeholder {
@@ -278,10 +365,12 @@ import characterImage from "@/assets/images/final.png";
 
   .hero-text-content h1 {
     font-size: 2.5em;
+    min-height: auto;
   }
 
   .hero-text-content p {
     font-size: 1em;
+    min-height: auto;
   }
 }
 

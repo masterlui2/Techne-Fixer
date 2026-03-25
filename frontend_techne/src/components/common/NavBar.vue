@@ -1,6 +1,6 @@
 <!-- src/components/common/Navbar.vue -->
 <template>
-  <nav class="app-navbar" :class="{ 'scrolled': isScrolled, 'auth-page': isAuthPage }">
+  <nav v-if="!isHiddenPage" class="app-navbar" :class="{ 'scrolled': isScrolled, 'auth-page': isAuthPage }">
     <div class="navbar-brand">
       <router-link to="/">
         <img :src="logo" alt="Techne-Fixer Logo" class="app-logo" />
@@ -18,8 +18,17 @@
 
       <!-- Public/Guest Links -->
       <template v-if="!isAuthenticated">
-        <router-link to="/login" class="btn btn-primary">Login</router-link>
-        <router-link to="/register" class="btn btn-secondary">Register</router-link>
+        <router-link :to="{name: 'Login'}" class="btn btn-primary">Login</router-link>
+        <router-link :to="{name: 'Register'}" class="btn btn-secondary">Register</router-link>
+      </template>
+
+      <template v-else-if="isAdmin">
+        <router-link to="/admin/dashboard" class="btn btn-primary">Dashboard</router-link>
+      </template>
+
+      <!-- Customer Logout -->
+      <template v-else>
+        <a @click="handleLogout" class="btn btn-logout">Logout</a>
       </template>
     </div>
 
@@ -73,12 +82,21 @@
         <!-- Mobile Auth Buttons -->
         <template v-if="!isAuthenticated">
           <div class="mobile-auth-buttons">
-            <router-link to="/login" class="btn btn-primary btn-mobile" @click="closeMobileMenu">
+            <router-link :to="{name: 'Login'}" class="btn btn-primary btn-mobile" @click="closeMobileMenu">
               Login
             </router-link>
-            <router-link to="/register" class="btn btn-secondary btn-mobile" @click="closeMobileMenu">
+            <router-link :to="{name: 'Register'}" class="btn btn-secondary btn-mobile" @click="closeMobileMenu">
               Register
             </router-link>
+          </div>
+        </template>
+
+        <!-- Mobile Customer Logout -->
+        <template v-else-if="!isAdmin">
+          <div class="mobile-auth-buttons">
+            <a @click="handleLogout" class="btn btn-logout btn-mobile">
+              🚪 Logout
+            </a>
           </div>
         </template>
       </div>
@@ -88,17 +106,27 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
+import { useRoute, useRouter } from 'vue-router';
 import logo from '@/assets/images/logo.png';
 
 const route = useRoute();
-const isAuthenticated = false;
+const router = useRouter();
+const auth = useAuthStore();
+const isAuthenticated = computed(() => !!auth.token);
+const isAdmin = computed(() => auth.user?.role === 'admin');
 const isScrolled = ref(false);
 const isMobileMenuOpen = ref(false);
 
 // Check if current page is an auth page (login/register)
 const isAuthPage = computed(() => {
-  return route.path === '/login' || route.path === '/register';
+  return route.path === '/auth/login' 
+    || route.path === '/auth/register' 
+    || route.path === '/auth/forgot-password'
+});
+
+const isHiddenPage = computed(() => {
+  return route.meta?.hideNavbar === true;
 });
 
 const handleScroll = () => {
@@ -119,6 +147,12 @@ const toggleMobileMenu = () => {
 const closeMobileMenu = () => {
   isMobileMenuOpen.value = false;
   document.body.style.overflow = '';
+};
+
+const handleLogout = async () => {
+  closeMobileMenu();
+  await auth.logout();
+  router.push('/auth/login');
 };
 
 const scrollToContact = () => {
@@ -251,6 +285,7 @@ onUnmounted(() => {
   text-decoration: none;
   display: inline-block;
   font-weight: 600;
+  cursor: pointer;
 }
 
 .btn-primary {
@@ -273,6 +308,18 @@ onUnmounted(() => {
 .btn-secondary:hover {
   background-color: white;
   color: #0a1f1a;
+}
+
+.btn-logout {
+  background-color: transparent;
+  color: #ff4444;
+  border: 1px solid #ff4444;
+}
+
+.btn-logout:hover {
+  background-color: rgba(255, 68, 68, 0.15);
+  border-color: #ff6666;
+  color: #ff6666;
 }
 
 /* Hamburger Button - Hidden on Desktop */

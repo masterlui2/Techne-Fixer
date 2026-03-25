@@ -1,95 +1,93 @@
-<!-- src/views/Auth/LoginPage.vue -->
+<!-- src/components/auth/LoginForm.vue -->
 <template>
-  <div class="login-page">
-    <!-- Simple Background -->
-    <div class="login-background"></div>
-
-    <!-- Login Container -->
-    <div class="login-container">
-      <div class="login-card">
-        <!-- Logo -->
-        <div class="logo-section">
-          <img :src="logo" alt="Techne-Fixer" class="logo" />
-          <h1>Welcome Back</h1>
-          <p>Sign in to your account</p>
-        </div>
-
-        <!-- Login Form -->
-        <form @submit.prevent="handleLogin" class="login-form">
-          <!-- Email Input -->
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input
-              id="email"
-              v-model="email"
-              type="email"
-              placeholder="your.email@example.com"
-              required
-            />
-          </div>
-
-          <!-- Password Input -->
-          <div class="form-group">
-            <label for="password">Password</label>
-            <div class="password-input">
-              <input
-                id="password"
-                v-model="password"
-                :type="showPassword ? 'text' : 'password'"
-                placeholder="Enter your password"
-                required
-              />
-              <button
-                type="button"
-                class="toggle-password"
-                @click="showPassword = !showPassword"
-                tabindex="-1"
-              >
-                <svg v-if="!showPassword" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path d="M1 10s3-7 9-7 9 7 9 7-3 7-9 7-9-7-9-7z" stroke="currentColor" stroke-width="2"/>
-                  <circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="2"/>
-                </svg>
-                <svg v-else width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path d="M14.12 14.12A7 7 0 0 1 3 10M9.88 5.88A7 7 0 0 1 17 10M1 1l18 18" stroke="currentColor" stroke-width="2"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          <!-- Remember Me & Forgot Password -->
-          <div class="form-options">
-            <label class="checkbox-label">
-              <input type="checkbox" v-model="rememberMe" />
-              <span>Remember me</span>
-            </label>
-            <a href="#" class="forgot-link">Forgot password?</a>
-          </div>
-
-          <!-- Submit Button -->
-          <button type="submit" class="submit-btn" :disabled="isLoading">
-            <span v-if="!isLoading">Sign In</span>
-            <span v-else class="loading">
-              <span class="spinner"></span>
-              Signing in...
-            </span>
-          </button>
-
-          <!-- Sign Up Link -->
-          <div class="signup-link">
-            Don't have an account? <router-link to="/register">Sign up</router-link>
-          </div>
-        </form>
-      </div>
+  <div class="login-card">
+    <!-- Logo -->
+    <div class="logo-section">
+      <img :src="logo" alt="Techne-Fixer" class="logo" />
+      <h1>Welcome Back</h1>
+      <p>Sign in to your account</p>
     </div>
+
+    <!-- Login Form -->
+    <form @submit.prevent="handleLogin" class="login-form">
+      <!-- Email Input -->
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          id="email"
+          v-model="email"
+          type="email"
+          placeholder="your.email@example.com"
+          required
+        />
+      </div>
+
+      <!-- Password Input -->
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="password-input">
+          <input
+            id="password"
+            v-model="password"
+            :type="showPassword ? 'text' : 'password'"
+            placeholder="Enter your password"
+            required
+          />
+          <button
+            type="button"
+            class="toggle-password"
+            @click="showPassword = !showPassword"
+            tabindex="-1"
+          >
+            <svg v-if="!showPassword" width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M1 10s3-7 9-7 9 7 9 7-3 7-9 7-9-7-9-7z" stroke="currentColor" stroke-width="2"/>
+              <circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            <svg v-else width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M14.12 14.12A7 7 0 0 1 3 10M9.88 5.88A7 7 0 0 1 17 10M1 1l18 18" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Remember Me & Forgot Password -->
+      <div class="form-options">
+        <label class="checkbox-label">
+          <input type="checkbox" v-model="rememberMe" />
+          <span>Remember me</span>
+        </label>
+        <router-link to="/forgot-password" class="forgot-link">Forgot password?</router-link>
+      </div>
+
+      <div v-if="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+      
+      <!-- Submit Button -->
+      <button type="submit" class="submit-btn" :disabled="isLoading">
+        <span v-if="!isLoading">Sign In</span>
+        <span v-else class="loading">
+          <span class="spinner"></span>
+          Signing in...
+        </span>
+      </button>
+
+      <!-- Sign Up Link -->
+      <div class="signup-link">
+        Don't have an account? <router-link to="/auth/register">Sign up</router-link>
+      </div>
+    </form>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 import logo from '@/assets/images/logo.png';
 
 const router = useRouter();
+const auth = useAuthStore();
 
 // Form state
 const email = ref('');
@@ -97,53 +95,25 @@ const password = ref('');
 const rememberMe = ref(false);
 const showPassword = ref(false);
 const isLoading = ref(false);
+const errorMessage = ref('');
 
 // Handle login
 const handleLogin = async () => {
   isLoading.value = true;
-  
-  try {
-    // TODO: Implement actual login logic
-    await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
-    
-    // On success, redirect to dashboard
-    router.push('/dashboard');
-  } catch (error) {
-    console.error('Login failed:', error);
-    // TODO: Show error message
-  } finally {
+  errorMessage.value = '';
+
+  try{
+    await auth.login({email: email.value, password: password.value});
+    router.push('/admin/dashboard');
+  }catch(error){
+    errorMessage.value = error.response?.data?.message || 'Invalid Credentials. Please try again.';
+  }finally{
     isLoading.value = false;
   }
 };
 </script>
 
 <style scoped>
-.login-page {
-  min-height: calc(100vh - 70px); /* Account for navbar height */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem 1rem;
-  position: relative;
-}
-
-/* Simple Background */
-.login-background {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #0f2d24 0%, #0a1f1a 100%);
-  z-index: -1;
-}
-
-/* Login Container */
-.login-container {
-  width: 100%;
-  max-width: 420px;
-}
-
 .login-card {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 16px;
@@ -321,6 +291,16 @@ const handleLogin = async () => {
   border-top-color: white;
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
+}
+
+.error-message {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  text-align: center;
 }
 
 @keyframes spin {

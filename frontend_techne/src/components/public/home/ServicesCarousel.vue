@@ -7,65 +7,78 @@
         <p>Expert repair solutions for all your electronic needs</p>
       </div>
 
-      <div class="carousel-wrapper">
-        <button 
-          class="carousel-btn prev" 
-          @click="prevSlide" 
-          :disabled="currentIndex === 0"
-          aria-label="Previous">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
+      <!-- Loading state -->
+      <div v-if="loading" class="loading-state">
+        <p>Loading services...</p>
+      </div>
 
-        <div class="carousel-track-container">
-          <div 
-            class="carousel-track" 
-            :style="trackStyle"
-            @touchstart="handleTouchStart"
-            @touchmove="handleTouchMove"
-            @touchend="handleTouchEnd"
-          >
+      <!-- Error state -->
+      <div v-else-if="error" class="error-state">
+        <p>{{ error }}</p>
+      </div>
+
+      <!-- Carousel -->
+      <template v-else>
+        <div class="carousel-wrapper">
+          <button 
+            class="carousel-btn prev" 
+            @click="prevSlide" 
+            :disabled="currentIndex === 0"
+            aria-label="Previous">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
+          <div class="carousel-track-container">
             <div 
-              v-for="(service, index) in services" 
-              :key="index"
-              class="service-card"
-              :style="cardStyle"
+              class="carousel-track" 
+              :style="trackStyle"
+              @touchstart="handleTouchStart"
+              @touchmove="handleTouchMove"
+              @touchend="handleTouchEnd"
             >
-              <BaseCard variant="elevated" hoverable padding="none">
-                <div class="card-content">
-                  <div class="icon-wrapper" :style="{ backgroundColor: service.color }">
-                    <span class="service-icon">{{ service.icon }}</span>
+              <div 
+                v-for="(service, index) in services" 
+                :key="service.id ?? index"
+                class="service-card"
+                :style="cardStyle"
+              >
+                <BaseCard variant="elevated" hoverable padding="none">
+                  <div class="card-content">
+                    <div class="icon-wrapper" :style="{ backgroundColor: service.color || fallbackColors[index % fallbackColors.length] }">
+                      <span class="service-icon">{{ service.icon }}</span>
+                    </div>
+                    <h3>{{ service.title }}</h3>
+                    <p>{{ service.description }}</p>
                   </div>
-                  <h3>{{ service.title }}</h3>
-                  <p>{{ service.description }}</p>
-                </div>
-              </BaseCard>
+                </BaseCard>
+              </div>
             </div>
           </div>
+
+          <button 
+            class="carousel-btn next" 
+            @click="nextSlide"
+            :disabled="currentIndex >= maxIndex"
+            aria-label="Next">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
         </div>
 
-        <button 
-          class="carousel-btn next" 
-          @click="nextSlide"
-          :disabled="currentIndex >= maxIndex"
-          aria-label="Next">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-      </div>
-
-      <div class="carousel-dots">
-        <button 
-          v-for="(dot, index) in totalDots" 
-          :key="index"
-          class="dot"
-          :class="{ active: index === currentIndex }"
-          @click="goToSlide(index)"
-          :aria-label="`Go to slide ${index + 1}`"
-        ></button>
-      </div>
+        <div class="carousel-dots">
+          <button 
+            v-for="(dot, index) in totalDots" 
+            :key="index"
+            class="dot"
+            :class="{ active: index === currentIndex }"
+            @click="goToSlide(index)"
+            :aria-label="`Go to slide ${index + 1}`"
+          ></button>
+        </div>
+      </template>
     </div>
   </section>
 </template>
@@ -79,53 +92,38 @@ const visibleSlides = ref(3);
 const touchStartX = ref(0);
 const touchEndX = ref(0);
 
-const services = [
-  {
-    icon: '💻',
-    title: 'Laptop Repair',
-    description: 'Professional laptop repair services including hardware replacement, software troubleshooting, and performance optimization',
-    color: '#ff4757'
-  },
-  {
-    icon: '🖨️',
-    title: 'Printer Repair',
-    description: 'Complete printer repair and maintenance for all brands - fixing jams, print quality issues, and connectivity problems',
-    color: '#ffd93d'
-  },
-  {
-    icon: '🌀',
-    title: 'Washing Machine Repair',
-    description: 'Expert repair services for all washing machine types - fixing leaks, drainage issues, and motor problems',
-    color: '#00ff88'
-  },
-  {
-    icon: '📱',
-    title: 'Cellphone Repair',
-    description: 'Fast and reliable cellphone repair - screen replacement, battery issues, charging problems, and software fixes',
-    color: '#3742fa'
-  },
-  {
-    icon: '📹',
-    title: 'CCTV Installation & Repair',
-    description: 'Professional CCTV installation, maintenance, and repair services for homes and businesses',
-    color: '#ff6b9d'
-  },
-  {
-    icon: '☀️',
-    title: 'Solar Panel Services',
-    description: 'Solar panel installation, maintenance, and repair - ensuring optimal energy efficiency and performance',
-    color: '#c56cf0'
-  },
-  {
-    icon: '🏥',
-    title: 'Medical Equipment Repair',
-    description: 'Certified repair and maintenance of medical clinic equipment with fast turnaround times',
-    color: '#ff9f43'
-  }
-];
+// --- Fetch state ---
+const services = ref([]);
+const loading = ref(true);
+const error = ref(null);
 
+const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+
+const fetchServices = async () => {
+  try {
+    loading.value = true;
+    error.value = null;
+
+    const response = await fetch(`${API_URL}/services`);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    // Adjust `data.data` to match your actual API response shape
+    services.value = data.data;
+  } catch (err) {
+    error.value = `Failed to load services: ${err.message}`;
+    console.error('Error fetching services:', err);
+  } finally {
+    loading.value = false;
+  }
+};
+
+// --- Carousel logic ---
 const maxIndex = computed(() => {
-  return Math.max(0, services.length - visibleSlides.value);
+  return Math.max(0, services.value.length - visibleSlides.value);
 });
 
 const totalDots = computed(() => {
@@ -149,48 +147,30 @@ const cardStyle = computed(() => {
 });
 
 const nextSlide = () => {
-  if (currentIndex.value < maxIndex.value) {
-    currentIndex.value++;
-  }
+  if (currentIndex.value < maxIndex.value) currentIndex.value++;
 };
 
 const prevSlide = () => {
-  if (currentIndex.value > 0) {
-    currentIndex.value--;
-  }
+  if (currentIndex.value > 0) currentIndex.value--;
 };
 
 const goToSlide = (index) => {
   currentIndex.value = index;
 };
 
-// Touch handlers for mobile swipe
-const handleTouchStart = (e) => {
-  touchStartX.value = e.touches[0].clientX;
-};
-
-const handleTouchMove = (e) => {
-  touchEndX.value = e.touches[0].clientX;
-};
-
-const handleTouchEnd = () => {
-  const swipeThreshold = 50;
+// --- Touch / swipe ---
+const handleTouchStart = (e) => { touchStartX.value = e.touches[0].clientX; };
+const handleTouchMove  = (e) => { touchEndX.value  = e.touches[0].clientX; };
+const handleTouchEnd   = () => {
   const diff = touchStartX.value - touchEndX.value;
-  
-  if (Math.abs(diff) > swipeThreshold) {
-    if (diff > 0) {
-      // Swiped left - next slide
-      nextSlide();
-    } else {
-      // Swiped right - previous slide
-      prevSlide();
-    }
+  if (Math.abs(diff) > 50) {
+    diff > 0 ? nextSlide() : prevSlide();
   }
-  
   touchStartX.value = 0;
   touchEndX.value = 0;
 };
 
+// --- Responsive ---
 const updateVisibleSlides = () => {
   if (window.innerWidth < 768) {
     visibleSlides.value = 1;
@@ -199,14 +179,13 @@ const updateVisibleSlides = () => {
   } else {
     visibleSlides.value = 3;
   }
-  
-  // Ensure current index is within bounds
   if (currentIndex.value > maxIndex.value) {
     currentIndex.value = maxIndex.value;
   }
 };
 
-onMounted(() => {
+onMounted(async () => {
+  await fetchServices();       // fetch first so services.length is ready
   updateVisibleSlides();
   window.addEventListener('resize', updateVisibleSlides);
 });
@@ -214,7 +193,19 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('resize', updateVisibleSlides);
 });
+
+const fallbackColors = [
+  '#ff4757',
+  '#ffd93d',
+  '#00ff88',
+  '#3742fa',
+  '#ff6b9d',
+  '#c56cf0',
+  '#ff9f43'
+];
 </script>
+
+<!-- styles unchanged — omitted for brevity, keep your original <style scoped> block -->
 
 <style scoped>
 .services-section {

@@ -56,46 +56,53 @@
                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
               </svg>
             </a>
-            <a href="#" class="social-link" aria-label="Twitter">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
-              </svg>
-            </a>
-            <a href="#" class="social-link" aria-label="LinkedIn">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-              </svg>
-            </a>
-            <a href="#" class="social-link" aria-label="GitHub">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
-              </svg>
-            </a>
           </div>
         </div>
 
         <div class="contact-form-wrapper">
-          <form @submit.prevent="handleSubmit" class="contact-form">
-            <div class="form-group">
-              <label for="name">Full Name</label>
-              <input 
-                type="text" 
-                id="name" 
-                v-model="formData.name" 
-                placeholder="John Doe"
-                required
-              />
+          <!-- Success Message -->
+          <div v-show="submitSuccess" class="success-message">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+              <path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke="#00ff88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M22 4L12 14.01l-3-3" stroke="#00ff88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <h3>Message Sent!</h3>
+            <p>Thank you for reaching out. We'll get back to you as soon as possible.</p>
+            <button class="reset-btn" @click="resetForm">Send Another Message</button>
+          </div>
+
+          <form v-show="!submitSuccess" @submit.prevent="handleSubmit" class="contact-form">
+            <!-- Error Banner -->
+            <div v-if="submitError" class="error-banner">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                <path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              {{ submitError }}
             </div>
 
             <div class="form-group">
-              <label for="email">Email Address</label>
+              <label for="name">Full Name <span class="required">*</span></label>
+              <input 
+                type="text" 
+                id="name" 
+                v-model="formData.name"
+                :class="{ 'input-error': errors.name }"
+                placeholder="John Doe"
+              />
+              <span v-if="errors.name" class="field-error">{{ errors.name }}</span>
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email Address <span class="required">*</span></label>
               <input 
                 type="email" 
                 id="email" 
-                v-model="formData.email" 
+                v-model="formData.email"
+                :class="{ 'input-error': errors.email }"
                 placeholder="john@example.com"
-                required
               />
+              <span v-if="errors.email" class="field-error">{{ errors.email }}</span>
             </div>
 
             <div class="form-group">
@@ -103,39 +110,40 @@
               <input 
                 type="tel" 
                 id="phone" 
-                v-model="formData.phone" 
+                v-model="formData.phone"
+                :class="{ 'input-error': errors.phone }"
                 placeholder="+63 123 456 7890"
               />
-            </div>
-
-            <div class="form-group">
-              <label for="service">Service Interested In</label>
-              <select id="service" v-model="formData.service" required>
-                <option value="">Select a service</option>
-                <option value="web-development">Web Development</option>
-                <option value="mobile-development">Mobile Development</option>
-                <option value="ui-ux-design">UI/UX Design</option>
-                <option value="cloud-solutions">Cloud Solutions</option>
-                <option value="maintenance">Maintenance & Support</option>
-                <option value="devops">DevOps</option>
-              </select>
+              <span v-if="errors.phone" class="field-error">{{ errors.phone }}</span>
             </div>
 
             <div class="form-group full-width">
-              <label for="message">Message</label>
+              <label for="message">Message <span class="required">*</span></label>
               <textarea 
                 id="message" 
-                v-model="formData.message" 
+                v-model="formData.message"
+                :class="{ 'input-error': errors.message }"
                 rows="5"
                 placeholder="Tell us about your project..."
-                required
               ></textarea>
+              <span v-if="errors.message" class="field-error">{{ errors.message }}</span>
+            </div>
+
+            <!-- reCAPTCHA v2 -->
+            <div class="form-group full-width recaptcha-wrapper">
+              <div ref="recaptchaContainer" id="recaptcha-container"></div>
+              <span v-if="errors.recaptcha" class="field-error">{{ errors.recaptcha }}</span>
             </div>
 
             <button type="submit" class="submit-btn" :disabled="isSubmitting">
               <span v-if="!isSubmitting">Send Message</span>
-              <span v-else>Sending...</span>
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <span v-else class="btn-loading">
+                <svg class="spinner" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/>
+                </svg>
+                Sending...
+              </span>
+              <svg v-if="!isSubmitting" width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M18 2L9 11M18 2L12 18L9 11M18 2L2 8L9 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </button>
@@ -147,37 +155,166 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
+import axios from '@/api/axios';
+
+const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || 'YOUR_RECAPTCHA_SITE_KEY';
+
+const recaptchaContainer = ref(null);
+const recaptchaWidgetId  = ref(null);
+const recaptchaToken     = ref('');
 
 const formData = ref({
   name: '',
   email: '',
   phone: '',
-  service: '',
-  message: ''
+  message: '',
 });
 
+const errors       = ref({});
 const isSubmitting = ref(false);
+const submitSuccess = ref(false);
+const submitError  = ref('');
+
+
+// add these refs alongside the existing ones
+const services = ref([]);
+const loadingServices = ref(true);
+
+const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+
+const fetchServices = async () => {
+  try {
+    const res = await fetch(`${API_URL}/services`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    services.value = data.data;
+  } catch (err) {
+    console.error('Failed to load services:', err);
+  } finally {
+    loadingServices.value = false;
+  }
+};
+
+
+// ── reCAPTCHA ────────────────────────────────────────────────────────────────
+
+const loadRecaptchaScript = () => {
+  return new Promise((resolve) => {
+    if (window.grecaptcha) { resolve(); return; }
+    const script = document.createElement('script');
+    script.src = 'https://www.google.com/recaptcha/api.js?render=explicit';
+    script.async = true;
+    script.defer = true;
+    script.onload = resolve;
+    document.head.appendChild(script);
+  });
+};
+
+const renderRecaptcha = () => {
+  if (!window.grecaptcha || !recaptchaContainer.value) return;
+  recaptchaWidgetId.value = window.grecaptcha.render(recaptchaContainer.value, {
+    sitekey: RECAPTCHA_SITE_KEY,
+    callback: (token) => { recaptchaToken.value = token; errors.value.recaptcha = ''; },
+    'expired-callback': () => { recaptchaToken.value = ''; },
+    'error-callback':   () => { recaptchaToken.value = ''; },
+  });
+};
+
+onMounted(async () => {
+  fetchServices();
+  await loadRecaptchaScript();
+  // grecaptcha.ready ensures the widget API is available
+  window.grecaptcha.ready(renderRecaptcha);
+});
+
+onUnmounted(() => {
+  // Clean up widget to avoid duplicate renders on hot-reload
+  if (recaptchaWidgetId.value !== null && window.grecaptcha) {
+    try { window.grecaptcha.reset(recaptchaWidgetId.value); } catch (_) {}
+  }
+});
+
+// ── Validation ───────────────────────────────────────────────────────────────
+
+const validate = () => {
+  const e = {};
+
+  if (!formData.value.name.trim())
+    e.name = 'Full name is required.';
+
+  if (!formData.value.email.trim())
+    e.email = 'Email address is required.';
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.value.email))
+    e.email = 'Please enter a valid email address.';
+
+  if (formData.value.phone && !/^[\d\s\+\-\(\)]{7,20}$/.test(formData.value.phone))
+    e.phone = 'Please enter a valid phone number.';
+
+  if (!formData.value.message.trim())
+    e.message = 'Message is required.';
+  else if (formData.value.message.trim().length < 10)
+    e.message = 'Message must be at least 10 characters.';
+
+  if (!recaptchaToken.value)
+    e.recaptcha = 'Please complete the reCAPTCHA verification.';
+
+  errors.value = e;
+  return Object.keys(e).length === 0;
+};
+
+// ── Submit ───────────────────────────────────────────────────────────────────
 
 const handleSubmit = async () => {
+  submitError.value = '';
+  if (!validate()) return;
+
   isSubmitting.value = true;
-  
-  // Simulate API call
-  await new Promise(resolve => setTimeout(resolve, 1500));
-  
-  console.log('Form submitted:', formData.value);
-  
-  // Reset form
-  formData.value = {
-    name: '',
-    email: '',
-    phone: '',
-    service: '',
-    message: ''
-  };
-  
-  isSubmitting.value = false;
-  alert('Thank you! We will get back to you soon.');
+
+  try {
+    await axios.post('/contact', {
+      name:            formData.value.name,
+      email:           formData.value.email,
+      phone:           formData.value.phone,
+      message:         formData.value.message,
+      recaptcha_token: recaptchaToken.value,
+    });
+
+    submitSuccess.value = true;
+
+  } catch (err) {
+    const data = err.response?.data;
+    const status = err.response?.status;
+
+    if (status === 422 && data?.errors) {
+      // Map Laravel validation errors to fields
+      const laravelErrors = {};
+      for (const [field, messages] of Object.entries(data.errors)) {
+        laravelErrors[field] = Array.isArray(messages) ? messages[0] : messages;
+      }
+      errors.value = laravelErrors;
+    } else {
+      submitError.value = data?.message || 'Something went wrong. Please try again.';
+    }
+  } finally {
+    isSubmitting.value = false;
+    // Always reset reCAPTCHA after a submission attempt
+    if (recaptchaWidgetId.value !== null && window.grecaptcha) {
+      window.grecaptcha.reset(recaptchaWidgetId.value);
+      recaptchaToken.value = '';
+    }
+  }
+};
+
+const resetForm = () => {
+  formData.value     = { name: '', email: '', phone: '', message: '' };
+  errors.value       = {};
+  submitSuccess.value = false;
+  submitError.value  = '';
+  recaptchaToken.value = '';
+  if (recaptchaWidgetId.value !== null && window.grecaptcha) {
+    window.grecaptcha.reset(recaptchaWidgetId.value);
+  }
 };
 </script>
 
@@ -286,6 +423,7 @@ const handleSubmit = async () => {
   justify-content: center;
   color: #666;
   transition: all 0.3s ease;
+  text-decoration: none;
 }
 
 .social-link:hover {
@@ -294,13 +432,70 @@ const handleSubmit = async () => {
   transform: translateY(-4px);
 }
 
+/* ── Form Wrapper ── */
 .contact-form-wrapper {
-  background: #f8f9fa;
+  background: #ffffff;
   border-radius: 16px;
   padding: 2.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
 }
 
+/* ── Success State ── */
+.success-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 2rem;
+  gap: 1rem;
+}
+
+.success-message h3 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #1a1a1a;
+}
+
+.success-message p {
+  color: #666;
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 320px;
+}
+
+.reset-btn {
+  margin-top: 0.5rem;
+  background: transparent;
+  border: 2px solid #00ff88;
+  color: #0a1f1a;
+  padding: 0.75rem 1.75rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.reset-btn:hover {
+  background: #00ff88;
+}
+
+/* ── Error Banner ── */
+.error-banner {
+  grid-column: 1 / -1;
+  background: #fff0f0;
+  border: 1px solid #ffcccc;
+  color: #cc0000;
+  border-radius: 8px;
+  padding: 0.875rem 1rem;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ── Form ── */
 .contact-form {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -310,7 +505,7 @@ const handleSubmit = async () => {
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .form-group.full-width {
@@ -323,6 +518,10 @@ const handleSubmit = async () => {
   color: #1a1a1a;
 }
 
+.required {
+  color: #e53e3e;
+}
+
 .form-group input,
 .form-group select,
 .form-group textarea {
@@ -333,6 +532,7 @@ const handleSubmit = async () => {
   transition: all 0.3s ease;
   font-family: inherit;
   background: white;
+  color: #1a1a1a;
 }
 
 .form-group input:focus,
@@ -343,11 +543,30 @@ const handleSubmit = async () => {
   box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
 }
 
+.form-group input.input-error,
+.form-group select.input-error,
+.form-group textarea.input-error {
+  border-color: #e53e3e;
+  box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
+}
+
+.field-error {
+  font-size: 0.8rem;
+  color: #e53e3e;
+  margin-top: 0.1rem;
+}
+
 .form-group textarea {
   resize: vertical;
   min-height: 120px;
 }
 
+/* ── reCAPTCHA ── */
+.recaptcha-wrapper {
+  align-items: flex-start;
+}
+
+/* ── Submit Button ── */
 .submit-btn {
   grid-column: 1 / -1;
   background: #00ff88;
@@ -377,17 +596,31 @@ const handleSubmit = async () => {
   cursor: not-allowed;
 }
 
-/* Responsive */
+.btn-loading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.spinner {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Responsive ── */
 @media (max-width: 1024px) {
   .contact-content {
     grid-template-columns: 1fr;
     gap: 3rem;
   }
-  
+
   .contact-info {
     position: static;
   }
-  
+
   .contact-info h2 {
     font-size: 2rem;
   }
@@ -397,32 +630,32 @@ const handleSubmit = async () => {
   .contact-section {
     padding: 3rem 0;
   }
-  
+
   .contact-info h2 {
     font-size: 1.75rem;
   }
-  
+
   .description {
     font-size: 1rem;
   }
-  
+
   .contact-form-wrapper {
     padding: 1.5rem;
   }
-  
+
   .contact-form {
     grid-template-columns: 1fr;
     gap: 1.25rem;
   }
-  
+
   .info-items {
     gap: 1.25rem;
   }
-  
+
   .social-links {
     gap: 0.75rem;
   }
-  
+
   .social-link {
     width: 40px;
     height: 40px;

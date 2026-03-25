@@ -7,7 +7,18 @@
         <p>Professional repair and maintenance for all your equipment</p>
       </div>
       
-      <div class="services-grid">
+      <!-- Loading state -->
+      <div v-if="loading" class="loading-state">
+        <p>Loading services...</p>
+      </div>
+      
+      <!-- Error state -->
+      <div v-else-if="error" class="error-state">
+        <p>{{ error }}</p>
+      </div>
+      
+      <!-- Services grid -->
+      <div v-else class="services-grid">
         <ProjectCard
           v-for="project in projects"
           :key="project.id"
@@ -22,162 +33,39 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue';
 import ProjectCard from '@/components/common/cards/ProjectCard.vue';
 
-const projects = [
-  {
-    id: 1,
-    category: 'Laptop',
-    name: 'Laptop Service',
-    description: 'Professional laptop repair, upgrade, and maintenance services.',
-    services: [
-      { 
-        type: 'Repair', 
-        scopeOfWork: [
-          'Motherboard diagnostics and repair',
-          'Component replacement',
-          'Thermal paste application'
-        ] 
-      },
-      { 
-        type: 'Upgrade', 
-        scopeOfWork: [
-          'SSD installation and data migration',
-          'RAM upgrade',
-          'BIOS update'
-        ] 
-      }
-    ]
-  },
-  {
-    id: 2,
-    category: 'Printer',
-    name: 'Printer Service',
-    description: 'Complete printer repair and maintenance solutions.',
-    services: [
-      { 
-        type: 'Repair', 
-        scopeOfWork: [
-          'Paper jam fixes',
-          'Roller replacement',
-          'Print head cleaning'
-        ] 
-      },
-      { 
-        type: 'Maintenance', 
-        scopeOfWork: [
-          'Regular cleaning',
-          'Firmware updates',
-          'Quality calibration'
-        ] 
-      }
-    ]
-  },
-  {
-    id: 3,
-    category: 'Washing Machine',
-    name: 'Washing Machine Service',
-    description: 'Expert washing machine repair and maintenance.',
-    services: [
-      { 
-        type: 'Repair', 
-        scopeOfWork: [
-          'Drain pump replacement',
-          'Door lock repair',
-          'Water valve service'
-        ] 
-      },
-      { 
-        type: 'Maintenance', 
-        scopeOfWork: [
-          'Deep cleaning',
-          'Filter maintenance',
-          'Balance adjustment'
-        ] 
-      }
-    ]
-  },
-  {
-    id: 4,
-    category: 'Cellphone',
-    name: 'Cellphone Service',
-    description: 'Professional smartphone repair with quality parts.',
-    services: [
-      { 
-        type: 'Repair', 
-        scopeOfWork: [
-          'Screen replacement',
-          'Battery replacement',
-          'Water damage repair'
-        ] 
-      }
-    ]
-  },
-  {
-    id: 5,
-    category: 'CCTV',
-    name: 'CCTV Installation',
-    description: 'Complete security camera system installation and maintenance.',
-    services: [
-      { 
-        type: 'Installation', 
-        scopeOfWork: [
-          'Camera installation at strategic locations',
-          'NVR setup and configuration',
-          'Remote viewing setup'
-        ] 
-      },
-      { 
-        type: 'Maintenance', 
-        scopeOfWork: [
-          'System monitoring',
-          'Firmware updates',
-          'Cable inspection'
-        ] 
-      }
-    ]
-  },
-  {
-    id: 6,
-    category: 'Solar Panel',
-    name: 'Solar Panel Installation',
-    description: 'Residential and commercial solar power solutions.',
-    services: [
-      { 
-        type: 'Installation', 
-        scopeOfWork: [
-          'Panel array installation',
-          'Inverter setup',
-          'Grid connection'
-        ] 
-      },
-      { 
-        type: 'Maintenance', 
-        scopeOfWork: [
-          'Panel cleaning',
-          'Performance monitoring',
-          'Connection inspection'
-        ] 
-      }
-    ]
-  },
-  {
-    id: 7,
-    category: 'Clinic Equipment',
-    name: 'Medical Equipment Service',
-    description: 'Professional calibration and maintenance of medical devices.',
-    services: [
-      { 
-        type: 'Maintenance', 
-        scopeOfWork: [
-          'Equipment calibration',
-          'Safety compliance check',
-          'Sterilization and cleaning'
-        ] 
-      }
-    ]
+const projects = ref([]);
+const loading = ref(true);
+const error = ref(null);
+
+const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+
+const fetchServices = async () => {
+  try {
+    loading.value = true;
+    error.value = null;
+    
+    const response = await fetch(`${API_URL}/services`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    projects.value = data.data;
+  } catch (err) {
+    error.value = `Failed to fetch services: ${err.message}`;
+    console.error('Error fetching services:', err);
+  } finally {
+    loading.value = false;
   }
-];
+};
+
+onMounted(() => {
+  fetchServices();
+});
 </script>
 
 <style scoped>
@@ -213,6 +101,22 @@ const projects = [
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 2rem;
+}
+
+/* Loading and error states */
+.loading-state,
+.error-state {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.1rem;
+}
+
+.loading-state {
+  color: #666;
+}
+
+.error-state {
+  color: #dc3545;
 }
 
 @media (max-width: 1024px) {
